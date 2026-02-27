@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://savelife99.com/sitemap.xml
