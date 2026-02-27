@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VS7KP20TD4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-VS7KP20TD4');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3130334799438130"
+        crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="naver-site-verification" content="24e192959dfe2af166aee0aab6f8b6ab417baff4" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="도파민 디톡스로 아낀 돈을 복리로 투자하면 얼마가 될까? 배달음식, 커피값 등 절약액을 계산하고 미래 자산 및 4% 법칙 기반 은퇴 자금을 시뮬레이션 해보는 직관적인 재테크 대시보드입니다.">
+    <meta name="keywords" content="복리계산기, 파이어족, 은퇴자금, 4%법칙, 재테크, 절약, 도파민디톡스, 목돈만들기, 투자시뮬레이션">
+    <title>은퇴 얼마면 돼? | 직관적인 절약/복리/은퇴 계산기</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-top: -8px;
+        }
+
+        .slider-cyan::-webkit-slider-thumb {
+            background: #22d3ee;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        }
+
+        .slider-emerald::-webkit-slider-thumb {
+            background: #34d399;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+        }
+
+        .slider-blue::-webkit-slider-thumb {
+            background: #60a5fa;
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #475569;
+            border-radius: 2px;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .radio-label {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        input[type="radio"]:checked+.radio-label {
+            background-color: #34d399;
+            color: #0f172a;
+            font-weight: bold;
+        }
+
+        .modal-bg {
+            backdrop-filter: blur(5px);
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .custom-checkbox {
+            accent-color: #34d399;
+            width: 1.1rem;
+            height: 1.1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-900 text-white font-sans antialiased selection:bg-emerald-500 selection:text-white flex flex-col min-h-screen">
+    <div id="captureArea" class="max-w-md mx-auto w-full flex flex-col p-6 bg-slate-900 flex-grow">
+
+        <!-- 브랜드 로고 / 타이틀 -->
+        <header class="text-center mb-6 mt-1" data-html2canvas-ignore="true">
+            <h1
+                class="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+                은퇴, 얼마면 돼?
+            </h1>
+            <p class="text-[11px] text-slate-400 mt-1 font-bold">직관적인 절약 · 복리 · 은퇴 시뮬레이터</p>
+        </header>
+
+        <div class="flex border-b border-slate-700 mb-6" data-html2canvas-ignore="true">
+            <button onclick="switchTab('retire')" id="tab-retire"
+                class="flex-1 pb-3 text-sm font-extrabold text-blue-400 border-b-4 border-blue-400 transition-colors">
+                은퇴 자금 🏖️
+            </button>
+            <button onclick="switchTab('invest')" id="tab-invest"
+                class="flex-1 pb-3 text-sm font-extrabold text-slate-500 border-b-4 border-transparent hover:text-emerald-400 transition-colors">
+                얼마면 돼 📈
+            </button>
+            <button onclick="switchTab('save')" id="tab-save"
+                class="flex-1 pb-3 text-sm font-extrabold text-slate-500 border-b-4 border-transparent hover:text-cyan-400 transition-colors">
+                안 쓰면 돼 🛑
+            </button>
+            <button onclick="switchTab('history')" id="tab-history"
+                class="flex-1 pb-3 text-sm font-extrabold text-slate-500 border-b-4 border-transparent hover:text-purple-400 transition-colors">
+                나의 기록 🗓️
+            </button>
+        </div>
+
+        <div id="sector-save" class="hidden">
+            <div
+                class="bg-slate-800 rounded-2xl p-6 mb-6 shadow-lg border border-slate-700 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
+                <p class="text-slate-400 text-sm mb-1">끊어낸 습관들의 총 <span class="text-cyan-400 font-bold">월 절약액</span></p>
+                <h2 id="totalSaveMonth" class="text-4xl font-extrabold text-white mb-2">0원</h2>
+            </div>
+
+            <div class="bg-slate-800/50 rounded-xl p-5 mb-6 border border-slate-700" data-html2canvas-ignore="true">
+                <h3 class="text-sm text-slate-300 font-bold mb-3 border-b border-slate-700 pb-2">🎯 절약 항목 만들기</h3>
+
+                <!-- 빠른 선택 -->
+                <p class="text-xs text-slate-500 mb-2">빠른 선택</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="setSavePreset('배달 음식', 25000, 2)"
+                        class="px-3 py-1.5 bg-slate-800 rounded-lg text-sm border border-slate-600 hover:border-cyan-400 hover:text-cyan-400 transition">🍔
+                        배달</button>
+                    <button onclick="setSavePreset('커피', 5000, 5)"
+                        class="px-3 py-1.5 bg-slate-800 rounded-lg text-sm border border-slate-600 hover:border-cyan-400 hover:text-cyan-400 transition">☕
+                        커피</button>
+                    <button onclick="setSavePreset('택시', 15000, 3)"
+                        class="px-3 py-1.5 bg-slate-800 rounded-lg text-sm border border-slate-600 hover:border-cyan-400 hover:text-cyan-400 transition">🚕
+                        택시</button>
+                    <button onclick="setSavePreset('술/유흥', 50000, 1)"
+                        class="px-3 py-1.5 bg-slate-800 rounded-lg text-sm border border-slate-600 hover:border-cyan-400 hover:text-cyan-400 transition">🍻
+                        술자리</button>
+                    <button onclick="setSavePreset('담배', 4500, 7)"
+                        class="px-3 py-1.5 bg-slate-800 rounded-lg text-sm border border-slate-600 hover:border-cyan-400 hover:text-cyan-400 transition">🚬
+                        담배</button>
+                    <button onclick="setCustomPreset()"
+                        class="px-3 py-1.5 bg-slate-800 rounded-lg text-sm border border-slate-600 hover:border-cyan-400 hover:text-cyan-400 transition">✏️
+                        기타</button>
+                </div>
+
+                <!-- 항목 입력 -->
+                <div class="space-y-4">
+                    <div
+                        class="bg-slate-900/60 rounded-xl px-4 py-3 border border-slate-600 focus-within:border-cyan-400 transition">
+                        <label class="text-xs text-slate-500 block mb-1">항목명</label>
+                        <input type="text" id="saveItemName" value="배달 음식" placeholder="직접 입력..."
+                            class="w-full bg-transparent font-bold text-cyan-400 focus:outline-none text-base">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <label class="text-sm text-slate-400">1회 지출액</label>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" id="saveCostNum" value="25000"
+                                    class="w-24 bg-transparent text-right font-bold text-white focus:outline-none border-b border-slate-600">
+                                <span class="text-sm text-slate-500">원</span>
+                            </div>
+                        </div>
+                        <input type="range" id="saveCostRange" min="1000" max="200000" step="1000" value="25000"
+                            class="w-full slider-cyan">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <label class="text-sm text-slate-400">주당 횟수</label>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" id="saveFreqNum" value="2"
+                                    class="w-16 bg-transparent text-right font-bold text-white focus:outline-none border-b border-slate-600">
+                                <span class="text-sm text-slate-500">번</span>
+                            </div>
+                        </div>
+                        <input type="range" id="saveFreqRange" min="1" max="21" step="1" value="2"
+                            class="w-full slider-cyan">
+                    </div>
+                </div>
+                <button onclick="addSaveItem()"
+                    class="w-full mt-5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2">
+                    ➕ 리스트에 추가하기
+                </button>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-bold text-slate-200 mb-3 px-1">📝 나의 절약 리스트</h3>
+                <div id="savedListContainer" class="space-y-3">
+                    <p class="text-sm text-slate-500 text-center py-4">아직 추가된 항목이 없습니다.</p>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-center" data-html2canvas-ignore="true">
+                <button onclick="switchTab('invest')"
+                    class="animate-bounce bg-slate-800 text-emerald-400 border border-emerald-500/50 px-6 py-3 rounded-full font-bold shadow-lg">
+                    이 돈으로 투자하러 가기 👉
+                </button>
+            </div>
+        </div>
+
+        <div id="sector-invest" class="hidden">
+            <!-- 은퇴자금 연동 배너 -->
+            <div id="retireLinkBanner"
+                class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-4 flex items-center justify-between">
+                <span class="text-xs text-blue-400">🏖️ 은퇴 자금 목표가 연동되었습니다</span>
+                <button onclick="clearRetireLink()" class="text-sm text-slate-500 hover:text-red-400 px-2">✕</button>
+            </div>
+
+            <!-- 계산 모드 토글 -->
+            <div class="flex bg-slate-800 rounded-xl p-1 mb-6 border border-slate-700" data-html2canvas-ignore="true">
+                <label class="flex-1 text-center">
+                    <input type="radio" name="investMode" value="monthly" checked class="hidden"
+                        onchange="toggleInvestMode()">
+                    <div
+                        class="invest-radio-label py-3 rounded-lg text-sm text-slate-400 cursor-pointer transition-all duration-200">
+                        💰 얼마씩 모을까?</div>
+                </label>
+                <label class="flex-1 text-center">
+                    <input type="radio" name="investMode" value="period" class="hidden" onchange="toggleInvestMode()">
+                    <div
+                        class="invest-radio-label py-3 rounded-lg text-sm text-slate-400 cursor-pointer transition-all duration-200">
+                        ⏳ 얼마나 걸릴까?</div>
+                </label>
+            </div>
+
+            <!-- 결과 표시 -->
+            <div
+                class="bg-slate-800 rounded-2xl p-6 mb-6 shadow-lg border border-slate-700 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-cyan-500"></div>
+                <p class="text-slate-400 text-sm mb-1" id="investResultLabel">목표 달성을 위한 월 적립액</p>
+                <h2 id="investMainResult" class="text-4xl font-extrabold text-white mb-2">계산 중...</h2>
+                <p class="text-emerald-400 text-sm font-medium" id="investSubResult"><span
+                        class="text-slate-500 text-xs">연 7% 수익률 가정</span></p>
+            </div>
+
+            <!-- 입력 영역 -->
+            <div class="space-y-6 mb-8">
+                <!-- 목표 금액 -->
+                <div>
+                    <div class="flex justify-between items-end mb-2">
+                        <label class="text-sm text-emerald-400 font-bold">🎯 목표 금액</label>
+                        <div class="text-right">
+                            <div id="investTargetKor" class="text-xs text-emerald-400 font-bold mb-1"></div>
+                            <div class="flex items-center justify-end space-x-1">
+                                <input type="number" id="investTargetNum" value="90000"
+                                    class="w-28 bg-transparent text-right font-bold text-white focus:outline-none border-b border-slate-600 focus:border-emerald-400 transition">
+                                <span class="text-sm text-slate-400">만원</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="range" id="investTargetRange" min="0" max="500000" step="500" value="90000"
+                        class="w-full slider-emerald">
+                </div>
+
+                <!-- 현재 보유 자산 -->
+                <div>
+                    <div class="flex justify-between items-end mb-2">
+                        <label class="text-sm text-slate-300 font-bold">💰 현재 보유 자산</label>
+                        <div class="text-right">
+                            <div id="investInitialKor" class="text-xs text-emerald-400 font-bold mb-1"></div>
+                            <div class="flex items-center justify-end space-x-1">
+                                <input type="number" id="investInitialNum" value="1000"
+                                    class="w-24 bg-transparent text-right font-bold text-white focus:outline-none border-b border-slate-600 focus:border-emerald-400 transition">
+                                <span class="text-sm text-slate-400">만원</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="range" id="investInitialRange" min="0" max="100000" step="100" value="1000"
+                        class="w-full slider-emerald">
+                </div>
+
+                <!-- 투자 기간 (월적립액 모드) -->
+                <div id="investPeriodGroup">
+                    <div class="flex justify-between items-end mb-2">
+                        <label class="text-sm text-slate-300 font-bold">⏳ 투자 기간</label>
+                        <div class="flex items-center justify-end space-x-1">
+                            <input type="number" id="investYearsNum" value="20"
+                                class="w-20 bg-transparent text-right font-bold text-white focus:outline-none border-b border-slate-600 focus:border-emerald-400 transition">
+                            <span class="text-sm text-slate-400">년</span>
+                        </div>
+                    </div>
+                    <input type="range" id="investYearsRange" min="1" max="50" step="1" value="20"
+                        class="w-full slider-emerald">
+                </div>
+
+                <!-- 월 적립액 (기간 계산 모드) -->
+                <div id="investMonthlyGroup" class="hidden">
+                    <div class="flex justify-between items-start mb-2">
+                        <label class="text-sm text-slate-300 font-bold">➕ 월 적립액</label>
+                        <div class="text-right mt-1">
+                            <div id="investMonthlyKor" class="text-xs text-emerald-400 font-bold mb-1"></div>
+                            <div class="flex items-center justify-end space-x-1">
+                                <input type="number" id="investMonthlyNum" value="50"
+                                    class="w-24 bg-transparent text-right font-bold text-white focus:outline-none border-b border-slate-600 focus:border-emerald-400 transition">
+                                <span class="text-sm text-slate-400">만원</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="range" id="investMonthlyRange" min="0" max="1000" step="1" value="50"
+                        class="w-full slider-emerald mt-1">
+                </div>
+            </div>
+
+            <!-- 차트 -->
+            <div class="bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-700 mb-4 w-full">
+                <canvas id="myChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <div id="sector-retire" class="block">
+
+            <!-- ── 섹션1: 4% 법칙 자동 계산 ── -->
+            <div class="bg-slate-800 rounded-2xl p-5 mb-4 shadow-lg border border-slate-700 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+                <p class="text-slate-400 text-xs mb-1 text-center">4% 법칙 기준 은퇴자산 🏖️</p>
+                <h2 id="retireMainResult" class="text-3xl font-extrabold text-white mb-1 text-center">9억 0만원</h2>
+                <p class="text-blue-400 text-xs font-medium text-center" id="retireSubResult">월 300만원씩 평생 인출 가능</p>
+            </div>
+
+            <div class="space-y-4 mb-5">
+                <div>
+                    <div class="flex justify-between items-end mb-2">
+                        <label class="text-sm text-blue-400 font-bold">💰 은퇴 후 월 생활비</label>
+                        <div class="flex items-center space-x-1">
+                            <input type="number" id="retireMonthlyNum" value="300"
+                                class="w-20 bg-transparent text-right font-bold text-white focus:outline-none border-b border-slate-600 focus:border-blue-400 transition">
+                            <span class="text-sm text-slate-400">만원</span>
+                        </div>
+                    </div>
+                    <input type="range" id="retireMonthlyRange" min="100" max="1500" step="10" value="300"
+                        class="w-full slider-blue">
+                </div>
+                <div class="flex justify-between items-center">
+                    <label class="text-sm text-blue-400 font-bold">📈 연간 안전 인출률</label>
+                    <select id="retireRateSelect"
+                        class="bg-slate-900 border border-slate-600 text-white text-sm rounded-lg p-2 outline-none">
+                        <option value="0.03">3% (매우 보수적)</option>
+                        <option value="0.04" selected>4% (표준 - 트리니티 연구)</option>
+                        <option value="0.05">5% (공격적)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-center mb-7" data-html2canvas-ignore="true">
+                <button onclick="goToInvestWith4Pct()"
+                    class="bg-slate-700 hover:bg-slate-600 text-blue-400 border border-blue-500/50 px-5 py-2.5 rounded-full font-bold text-sm transition">
+                    이 금액으로 저축 계획 세우기 👉
+                </button>
+            </div>
+
+            <!-- OR 구분선 -->
+            <div class="flex items-center gap-3 mb-7">
+                <div class="flex-1 h-px bg-slate-700"></div>
+                <span class="text-slate-500 text-sm font-bold px-2">또는</span>
+                <div class="flex-1 h-px bg-slate-700"></div>
+            </div>
+
+            <!-- ── 섹션2: 나만의 목표 직접 설정 ── -->
+            <div class="bg-slate-800 rounded-2xl p-5 border border-emerald-500/30 relative overflow-hidden mb-2">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-cyan-500"></div>
+                <p class="text-emerald-400 text-sm font-bold mb-4">🎯 나만의 목표 직접 설정</p>
+
+                <div class="mb-5">
+                    <!-- 최종 목표금액 -->
+                    <label class="text-xs text-slate-400 font-medium block mb-1">🏆 최종 목표금액</label>
+                    <div
+                        class="flex items-center gap-2 bg-slate-900 rounded-xl px-4 py-2.5 border border-slate-600 focus-within:border-emerald-400">
+                        <input type="number" id="retireCustomTarget" placeholder="예: 100000"
+                            class="flex-1 bg-transparent text-right font-extrabold text-white text-xl focus:outline-none"
+                            oninput="updateRetireCustomKor()">
+                        <span class="text-slate-400 text-sm">만원</span>
+                    </div>
+                    <p class="text-xs text-right mt-1" id="retireCustomKor"><span class="text-slate-500">직접 입력하세요</span>
+                    </p>
+                </div>
+
+                <button onclick="goToInvestWithCustom()" data-html2canvas-ignore="true"
+                    class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg text-sm">
+                    이 목표로 저축 계획 세우기 👉
+                </button>
+            </div>
+        </div>
+
+        <div id="sector-history" class="hidden">
+            <header class="mb-6 border-b-2 border-purple-500 pb-4 text-center">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">나의 성장 기록 📈</h1>
+                <p class="text-slate-400 text-sm mt-2">매달 기록하며 목표를 향해 나아가는 나를 확인하세요</p>
+            </header>
+
+            <!-- 취합 요약 (누적) -->
+            <div id="historySummaryBar" class="hidden bg-slate-800 rounded-2xl p-4 mb-6 border border-slate-700">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-purple-400 font-bold">📊 전체 절약 누적액</span>
+                    <span id="historyCumulativeSave" class="text-sm font-bold text-white">0원</span>
+                </div>
+            </div>
+
+            <div id="historyListContainer" class="space-y-4 mb-8"></div>
+        </div>
+
+        <div class="pt-4 flex gap-2" data-html2canvas-ignore="true" id="actionButtons">
+            <button onclick="openSnapshotModal()"
+                class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 rounded-xl transition shadow-lg flex justify-center items-center gap-1 border border-purple-500 text-sm">
+                <span>💾</span> 현재 상태 기록
+            </button>
+            <button onclick="captureImage()"
+                class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded-xl transition shadow-lg flex justify-center items-center gap-1 border border-slate-600 text-sm">
+                <span>📸</span> 결과 캡처
+            </button>
+        </div>
+
+        <!-- 탭별 하단 설명 텍스트 -->
+        <article id="article-retire"
+            class="mt-8 bg-slate-800/80 p-6 rounded-2xl border border-slate-700 text-slate-300 leading-relaxed text-sm shadow-xl"
+            data-html2canvas-ignore="true">
+            <h2 class="text-xl font-bold text-white mb-4 border-b border-slate-700 pb-2">🏖️ 경제적 자유의 기준, '4% 법칙'이란?</h2>
+            <p class="mb-4">은퇴 후 가장 큰 두려움은 '모아둔 돈이 떨어지는 것'입니다. 미국 트리니티 대학교 연구진이 과거 70년간의 데이터를 분석해 발표한 <strong
+                    class="text-blue-400">4% 법칙</strong>은 이 고민을 과학적으로 해결해 줍니다.</p>
+            <p class="mb-4">전체 자산의 4%만 매년 생활비로 인출하고, 나머지 96%를 분산 투자하면 물가 상승률을 방어하며 30년 이상 원금이 유지될 확률이 95% 이상입니다.</p>
+            <h3 class="text-blue-400 font-bold mt-4 mb-1">💡 25배의 법칙: 내 은퇴 자금 계산법</h3>
+            <p>연간 목표 생활비 × 25 = 내가 모아야 할 은퇴 자산! 목표 월 생활비를 입력하면 필요한 총 은퇴 자금이 즉시 계산됩니다.</p>
+        </article>
+
+        <article id="article-invest"
+            class="hidden mt-8 bg-slate-800/80 p-6 rounded-2xl border border-slate-700 text-slate-300 leading-relaxed text-sm shadow-xl"
+            data-html2canvas-ignore="true">
+            <h2 class="text-xl font-bold text-white mb-4 border-b border-slate-700 pb-2">✨ 아인슈타인도 감탄한 '복리의 마법'</h2>
+            <p class="mb-4">복리(Compound Interest)는 원금과 이자가 합쳐진 금액에 다시 이자가 붙는 방식입니다. 시간이 지날수록 눈덩이가 굴러가듯 자산이 기하급수적으로
+                불어납니다.</p>
+            <h3 class="text-emerald-400 font-bold mt-4 mb-1">📈 얼마면 돼 사용법</h3>
+            <p>'안 쓰면 돼'에서 계산한 월 절약액이 자동 연동됩니다. 연 수익률과 투자 기간을 설정하면 미래 자산을 그래프로 확인할 수 있습니다. 목표 금액을 먼저 정하고 필요한 수익률을 역산하는 것도
+                가능합니다.</p>
+        </article>
+
+        <article id="article-save"
+            class="hidden mt-8 bg-slate-800/80 p-6 rounded-2xl border border-slate-700 text-slate-300 leading-relaxed text-sm shadow-xl"
+            data-html2canvas-ignore="true">
+            <h2 class="text-xl font-bold text-white mb-4 border-b border-slate-700 pb-2">🛑 도파민 디톡스로 시작하는 재테크</h2>
+            <p class="mb-4">지갑을 얇게 만드는 주범은 큰돈이 아니라 매일 습관적으로 빠져나가는 '작은 지출'입니다. 배달 음식, 커피, 택시비 등 무의식적인 소비 패턴을 직접 입력해 보세요.
+            </p>
+            <h3 class="text-cyan-400 font-bold mt-4 mb-1">💡 사용 팁</h3>
+            <p>한 달 절약액이 계산되면 '얼마면 돼' 탭으로 이동해 이 돈을 복리로 투자했을 때의 미래 자산을 시뮬레이션해 보세요. 작은 습관이 10년 후 수천만 원의 차이를 만듭니다.</p>
+        </article>
+
+        <article id="article-history"
+            class="hidden mt-8 bg-slate-800/80 p-6 rounded-2xl border border-slate-700 text-slate-300 leading-relaxed text-sm shadow-xl"
+            data-html2canvas-ignore="true">
+            <h2 class="text-xl font-bold text-white mb-4 border-b border-slate-700 pb-2">📈 나의 성장을 기록하세요</h2>
+            <p class="mb-4">'현재 상태 기록' 버튼을 눌러 지금의 절약액과 예상 자산을 저장하세요. 시간이 지날수록 발전하는 내 재정 상황을 한눈에 비교할 수 있습니다.</p>
+            <p>꾸준한 기록이 동기부여의 핵심입니다. 매달 한 번씩 기록하는 것을 추천합니다! 💪</p>
+        </article>
+    </div>
+
+    <!-- 플로팅 가이드 버튼 -->
+    <button id="guideBtn" onclick="toggleGuide()"
+        class="fixed bottom-6 right-4 z-40 flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-4 py-2.5 rounded-full shadow-xl font-bold text-sm animate-pulse hover:animate-none hover:scale-105 transition-all"
+        data-html2canvas-ignore="true">📖 사용가이드</button>
+
+    <!-- 가이드 팝업 -->
+    <div id="guidePopup"
+        class="hidden fixed bottom-20 right-4 z-40 w-72 bg-slate-800 border border-slate-600 rounded-2xl shadow-2xl p-4 text-sm text-slate-300"
+        data-html2canvas-ignore="true">
+        <div class="flex justify-between items-center mb-3">
+            <span class="font-bold text-white">📖 사용 가이드</span>
+            <button onclick="toggleGuide()"
+                class="text-slate-400 hover:text-white text-lg leading-none">&times;</button>
+        </div>
+        <ol class="space-y-2 text-xs leading-relaxed">
+            <li class="flex gap-2"><span class="text-blue-400 font-bold shrink-0">①</span><span><b
+                        class="text-blue-300">은퇴자금</b> — 은퇴 후 월 생활비를 입력하면 4% 법칙으로 필요한 총 자산이 계산됩니다.</span></li>
+            <li class="flex gap-2"><span class="text-emerald-400 font-bold shrink-0">②</span><span><b
+                        class="text-emerald-300">얼마면돼</b> — 목표금액을 정하고 기간을 입력하면 월 납입액을, 납입액을 입력하면 달성 기간을 알려줍니다.</span>
+            </li>
+            <li class="flex gap-2"><span class="text-cyan-400 font-bold shrink-0">③</span><span><b
+                        class="text-cyan-300">안쓰면돼</b> — 날마다 쓰는 소비 습관을 입력해 월 절약액을 계산합니다.</span></li>
+            <li class="flex gap-2"><span class="text-purple-400 font-bold shrink-0">④</span><span><b
+                        class="text-purple-300">나의기록</b> — 현재 자산을 입력해 저장하면 목표까지 남은 기간과 달성률이 누적 기록됩니다.</span></li>
+        </ol>
+        <p class="text-xs text-slate-500 mt-3 text-center">연 7% 수익률 기준 · 단순 시뮬레이션</p>
+    </div>
+
+    <footer class="bg-slate-950 border-t border-slate-800 text-slate-500 text-xs py-8 w-full mt-auto"
+        data-html2canvas-ignore="true">
+        <div class="max-w-md mx-auto px-6 flex flex-col items-center gap-4 text-center">
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 mb-2">
+                <a href="/blog.html" class="hover:text-emerald-400 transition font-bold">📚 관리자 블로그</a>
+                <div class="w-full flex justify-center gap-x-6 mt-1">
+                    <a href="/guide.html" class="hover:text-cyan-400 transition">💡 절약 가이드</a>
+                    <a href="privacy.html" class="hover:text-cyan-400 transition">개인정보처리방침</a>
+                    <a href="terms.html" class="hover:text-cyan-400 transition">서비스 이용약관</a>
+                </div>
+            </div>
+            <p>&copy; 2026 은퇴 얼마면 돼? (savelife99.com). All rights reserved.</p>
+            <p class="text-[10px] text-slate-600">본 사이트의 모든 결과는 단순 시뮬레이션이며 실제 수익을 보장하지 않습니다.</p>
+        </div>
+    </footer>
+
+    <div id="imgModal"
+        class="fixed inset-0 z-50 hidden modal-bg bg-black/80 flex flex-col justify-center items-center p-4"
+        data-html2canvas-ignore="true">
+        <div
+            class="bg-slate-800 p-4 rounded-2xl w-full max-w-sm shadow-2xl border border-slate-700 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 shrink-0">
+                <h3 class="text-lg font-bold text-emerald-400">이미지 생성 완료!</h3>
+                <button onclick="closeModal('imgModal')"
+                    class="text-slate-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg mb-4 flex justify-center overflow-y-auto">
+                <img id="generatedImage" class="max-w-full h-auto rounded border border-slate-700" alt="결과 이미지">
+            </div>
+            <p class="text-center text-sm text-slate-300 mb-4 shrink-0">
+                👆 위 이미지를 <span class="text-emerald-400 font-bold">꾹 눌러서</span><br>
+                [사진 앱에 저장]을 선택하세요.
+            </p>
+            <button onclick="closeModal('imgModal')"
+                class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl shrink-0">닫기</button>
+        </div>
+    </div>
+    <div id="snapshotModal"
+        class="fixed inset-0 z-50 hidden modal-bg bg-black/80 flex flex-col justify-center items-center p-4"
+        data-html2canvas-ignore="true">
+        <div class="bg-slate-800 p-5 rounded-2xl w-full max-w-sm shadow-2xl border border-purple-500/50">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-purple-400">📋 오늘의 기록 남기기</h3>
+                <button onclick="closeModal('snapshotModal')"
+                    class="text-slate-400 hover:text-white text-2xl">&times;</button>
+            </div>
+
+            <p class="text-xs text-slate-400 mb-4">기록 날짜: <span class="text-white font-bold"
+                    id="snapshotDateLabel"></span></p>
+
+            <div class="mb-5">
+                <label class="text-sm text-purple-300 font-bold block mb-2">💰 현재 실제 보유 자산 (만원)</label>
+                <div
+                    class="flex items-center gap-2 bg-slate-900 rounded-xl px-4 py-3 border border-slate-600 focus-within:border-purple-400">
+                    <input type="number" id="snapshotAssetNum" placeholder="예: 3000"
+                        class="flex-1 bg-transparent text-right font-bold text-white text-xl focus:outline-none">
+                    <span class="text-slate-400">만원</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1 text-right">예금 + 투자자산 모두 포함</p>
+            </div>
+
+            <p class="text-[11px] text-slate-400 mb-4 bg-slate-900/50 rounded-lg p-3">
+                📌 목표금액 · 절약액 · 남은기간은 현재 설정값을 기준으로 자동 저장됩니다.
+            </p>
+
+            <button onclick="doSaveSnapshot()"
+                class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition">
+                ✅ 저장하기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let myChart;
+        let savedItems = [];
+        let investMode = 'monthly';
+        window.linkedMonthlyAmount = 0;
+        window.currentCalculatedAsset = 0;
+
+        const saveEls = {
+            nameInput: document.getElementById('saveItemName'), costRange: document.getElementById('saveCostRange'), costNum:
+                document.getElementById('saveCostNum'),
+            freqRange: document.getElementById('saveFreqRange'), freqNum: document.getElementById('saveFreqNum'),
+            totalMonth: document.getElementById('totalSaveMonth'), listContainer: document.getElementById('savedListContainer')
+        };
+        const retireEls = {
+            monthlyNum: document.getElementById('retireMonthlyNum'), monthlyRange:
+                document.getElementById('retireMonthlyRange'),
+            rateSelect: document.getElementById('retireRateSelect'), main: document.getElementById('retireMainResult'),
+            sub: document.getElementById('retireSubResult')
+        };
+
+        window.onload = () => {
+            loadHabitsFromStorage(); loadInvestState(); renderHistoryList(); calculateRetire();
+            switchTab('retire');
+        };
+
+        function switchTab(tabName) {
+            const tabs = ['save', 'invest', 'retire', 'history'];
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            tabs.forEach(t => {
+                const section = document.getElementById(`sector-${t}`);
+                const tabBtn = document.getElementById(`tab-${t}`);
+                const article = document.getElementById(`article-${t}`);
+                if (t === tabName) {
+                    section.classList.remove('hidden');
+                    if (article) article.classList.remove('hidden');
+                    tabBtn.classList.remove('text-slate-500', 'border-transparent');
+                    if (t === 'save') tabBtn.classList.add('text-cyan-400', 'border-cyan-400');
+                    if (t === 'invest') tabBtn.classList.add('text-emerald-400', 'border-emerald-400');
+                    if (t === 'retire') tabBtn.classList.add('text-blue-400', 'border-blue-400');
+                    if (t === 'history') tabBtn.classList.add('text-purple-400', 'border-purple-400');
+                } else {
+                    section.classList.add('hidden');
+                    if (article) article.classList.add('hidden');
+                    tabBtn.classList.add('text-slate-500', 'border-transparent');
+                    tabBtn.classList.remove('text-cyan-400', 'border-cyan-400', 'text-emerald-400', 'border-emerald-400',
+                        'text-blue-400', 'border-blue-400', 'text-purple-400', 'border-purple-400');
+                }
+            });
+
+            // 그래프 강제 렌더링
+            if (tabName === 'invest') {
+                setTimeout(() => calcInvest(), 10);
+            }
+        }
+
+        // --- 4% 은퇴 자금 계산기 로직 ---
+        function calculateRetire() {
+            const monthly = parseInt(retireEls.monthlyNum.value) || 0;
+            const rate = parseFloat(retireEls.rateSelect.value);
+            const total = (monthly * 12 * 10000) / rate;
+
+            if (total >= 100000000) {
+                const uk = Math.floor(total / 100000000);
+                const man = Math.floor((total % 100000000) / 10000);
+                retireEls.main.innerText = `${uk}억 ${man > 0 ? man + '만원' : ''}`;
+            } else {
+                retireEls.main.innerText = numberToKorean(Math.round(total / 10000)) + '원';
+            }
+            retireEls.sub.innerText = `월 ${monthly.toLocaleString()}만원씩 평생 인출 가능`;
+        }
+
+        retireEls.monthlyRange.oninput = (e) => { retireEls.monthlyNum.value = e.target.value; calculateRetire(); };
+        retireEls.monthlyNum.oninput = (e) => { retireEls.monthlyRange.value = e.target.value; calculateRetire(); };
+        retireEls.rateSelect.onchange = calculateRetire;
+
+        // --- 기존 기능들 유지 ---
+        function setSavePreset(name, cost, freq) {
+            saveEls.nameInput.value = name;
+            saveEls.nameInput.readOnly = true;
+            saveEls.nameInput.classList.add('opacity-70', 'cursor-not-allowed');
+            saveEls.costNum.value = cost; saveEls.costRange.value = cost;
+            saveEls.freqNum.value = freq; saveEls.freqRange.value = freq;
+            updateSaveCalculations();
+        }
+
+        function setCustomPreset() {
+            saveEls.nameInput.value = '';
+            saveEls.nameInput.readOnly = false;
+            saveEls.nameInput.classList.remove('opacity-70', 'cursor-not-allowed');
+            saveEls.nameInput.placeholder = '항목명을 입력해 주세요';
+            saveEls.nameInput.focus();
+        }
+
+        function updateSaveCalculations() {
+            const cost = parseInt(saveEls.costNum.value) || 0;
+            const freq = parseInt(saveEls.freqNum.value) || 0;
+            const monthly = Math.round(cost * freq * 4.345);
+            saveEls.totalMonth.innerText = monthly.toLocaleString() + '원';
+            return monthly;
+        }
+
+        saveEls.costRange.oninput = (e) => { saveEls.costNum.value = e.target.value; updateSaveCalculations(); };
+        saveEls.costNum.oninput = (e) => { saveEls.costRange.value = e.target.value; updateSaveCalculations(); };
+        saveEls.freqRange.oninput = (e) => { saveEls.freqNum.value = e.target.value; updateSaveCalculations(); };
+        saveEls.freqNum.oninput = (e) => { saveEls.freqRange.value = e.target.value; updateSaveCalculations(); };
+
+        function addSaveItem() {
+            const name = saveEls.nameInput.value || '절약 항목';
+            const cost = parseInt(saveEls.costNum.value) || 0;
+            const freq = parseInt(saveEls.freqNum.value) || 0;
+            const monthly = Math.round(cost * freq * 4.345);
+
+            if (monthly <= 0) return; const newItem = { id: Date.now(), name, cost, freq, monthly }; savedItems.push(newItem);
+            saveHabitsToStorage(); renderSavedList(); updateTotalSave();
+        } function deleteSaveItem(id) {
+            savedItems = savedItems.filter(item => item.id !== id);
+            saveHabitsToStorage(); renderSavedList(); updateTotalSave();
+        }
+
+        function renderSavedList() {
+            if (savedItems.length === 0) {
+                saveEls.listContainer.innerHTML = '<p class="text-sm text-slate-500 text-center py-4">아직 추가된 항목이 없습니다.</p>';
+                return;
+            }
+            saveEls.listContainer.innerHTML = savedItems.map(item => `
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex justify-between items-center group">
+            <div>
+                <div class="text-xs text-slate-500 mb-1">${item.name} (주 ${item.freq}회)</div>
+                <div class="text-lg font-bold text-white">월 ${item.monthly.toLocaleString()}원 절약</div>
+            </div>
+            <button onclick="deleteSaveItem(${item.id})" class="text-slate-600 hover:text-red-400 p-2 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+            </button>
+        </div>
+        `).join('');
+        }
+
+        function updateTotalSave() {
+            const total = savedItems.reduce((sum, item) => sum + item.monthly, 0);
+            saveEls.totalMonth.innerText = total.toLocaleString() + '원';
+            window.linkedMonthlyAmount = Math.round(total / 10000);
+            const linkToggle = document.getElementById('investLinkToggle');
+            if (linkToggle && linkToggle.checked) {
+                document.getElementById('investMonthlyNum').value = window.linkedMonthlyAmount;
+                document.getElementById('investMonthlyRange').value = window.linkedMonthlyAmount;
+                calcInvest();
+            }
+        }
+
+        function saveHabitsToStorage() { localStorage.setItem('savedHabits', JSON.stringify(savedItems)); }
+        function loadHabitsFromStorage() {
+            const data = localStorage.getItem('savedHabits');
+            if (data) { savedItems = JSON.parse(data); renderSavedList(); updateTotalSave(); }
+        }
+
+        // ────────── 얼마면 돼 탭 새 로직 ──────────
+        function toggleInvestMode() {
+            investMode = document.querySelector('input[name="investMode"]:checked').value;
+            document.getElementById('investPeriodGroup').classList.toggle('hidden', investMode !== 'monthly');
+            document.getElementById('investMonthlyGroup').classList.toggle('hidden', investMode !== 'period');
+            document.getElementById('investResultLabel').innerText =
+                investMode === 'monthly' ? '목표 달성을 위한 월 적립액' : '목표 달성까지 필요한 기간';
+            calcInvest();
+        }
+
+        function calcInvest() {
+            const target = (parseInt(document.getElementById('investTargetNum').value) || 0) * 10000;
+            const initial = (parseInt(document.getElementById('investInitialNum').value) || 0) * 10000;
+            const annualRate = 0.07; // 연 7% 고정 (장기 분산투자 평균)
+            const monthlyRate = annualRate / 12;
+
+            document.getElementById('investTargetKor').innerText = numberToKorean(target) + '원';
+            document.getElementById('investInitialKor').innerText = numberToKorean(initial) + '원';
+
+            if (investMode === 'monthly') {
+                const years = parseInt(document.getElementById('investYearsNum').value) || 1;
+                const months = years * 12;
+                let requiredMonthly;
+                if (monthlyRate > 0) {
+                    const gf = Math.pow(1 + monthlyRate, months);
+                    requiredMonthly = (target - initial * gf) / ((gf - 1) / monthlyRate * (1 + monthlyRate));
+                } else {
+                    requiredMonthly = (target - initial) / months;
+                }
+                if (requiredMonthly < 0) requiredMonthly = 0; const wan = Math.ceil(requiredMonthly / 10000);
+                window.currentCalculatedAsset = target;
+                document.getElementById('investMainResult').innerText = wan.toLocaleString() + '만원/월';
+                document.getElementById('investSubResult').innerText = `월 ${wan.toLocaleString()}만원 × ${years}년 →
+            ${numberToKorean(target)}원 달성`; updateInvestChart(initial, Math.ceil(requiredMonthly), annualRate, years,
+                    target); saveInvestState();
+            } else {
+                const
+                    monthly = (parseInt(document.getElementById('investMonthlyNum').value) || 0) * 10000;
+                document.getElementById('investMonthlyKor').innerText = numberToKorean(monthly) + '원'; if (initial >= target) {
+                    document.getElementById('investMainResult').innerText = '이미 달성! 🎉';
+                    document.getElementById('investSubResult').innerText = '현재 자산이 목표를 초과합니다';
+                    return;
+                }
+                if (monthly <= 0) {
+                    document.getElementById('investMainResult').innerText = '월 적립액을 입력하세요';
+                    document.getElementById('investSubResult').innerText = ''; return;
+                } let low = 0, high = 100; for (let i = 0; i
+                    < 60; i++) {
+                    const mid = (low + high) / 2; const m = mid * 12; let val = monthlyRate > 0
+                        ? initial * Math.pow(1 + monthlyRate, m) + monthly * (Math.pow(1 + monthlyRate, m) - 1) / monthlyRate *
+                        (1 + monthlyRate)
+                        : initial + monthly * m;
+                    if (val < target) low = mid; else high = mid;
+                } const totalMonths = Math.ceil((low + high) / 2 * 12); const
+                    yy = Math.floor(totalMonths / 12); const mm = totalMonths % 12; const periodStr = yy > 0 ? (mm > 0 ?
+                        `${yy}년 ${mm}개월` : `${yy}년`) : `${mm}개월`;
+                window.currentCalculatedAsset = target;
+                document.getElementById('investMainResult').innerText = periodStr;
+                document.getElementById('investSubResult').innerText = `월 ${numberToKorean(monthly)}원 적립 시
+                    ${numberToKorean(target)}원 달성`;
+                updateInvestChart(initial, monthly, annualRate, Math.ceil((low + high) / 2) + 1, target);
+                saveInvestState();
+            }
+        }
+
+        function toggleInvestLink() {
+            const isLinked = document.getElementById('investLinkToggle').checked;
+            if (isLinked) {
+                document.getElementById('investMonthlyNum').value = window.linkedMonthlyAmount;
+                document.getElementById('investMonthlyRange').value = window.linkedMonthlyAmount;
+            }
+            calcInvest();
+        }
+
+        function syncRetireTarget() {
+            const monthly = parseInt(retireEls.monthlyNum.value) || 0;
+            const rate = parseFloat(retireEls.rateSelect.value);
+            const totalWan = Math.round((monthly * 12 * 10000) / rate / 10000);
+            document.getElementById('retireCustomTarget').value = totalWan;
+            updateRetireCustomKor();
+        }
+
+        function updateRetireCustomKor() {
+            const wan = parseInt(document.getElementById('retireCustomTarget').value) || 0;
+            const el = document.getElementById('retireCustomKor');
+            if (wan > 0) {
+                el.innerText = numberToKorean(wan * 10000) + '원';
+                el.classList.add('text-blue-400');
+                el.classList.remove('text-slate-500');
+            } else {
+                el.innerText = '목표 금액을 직접 입력하세요';
+                el.classList.remove('text-blue-400');
+                el.classList.add('text-slate-500');
+            }
+        }
+
+        function goToInvestWith4Pct() {
+            const monthly = parseInt(retireEls.monthlyNum.value) || 0;
+            const rate = parseFloat(retireEls.rateSelect.value);
+            const totalWan = Math.round((monthly * 12 * 10000) / rate / 10000);
+            document.getElementById('investTargetNum').value = totalWan;
+            document.getElementById('investTargetRange').value = Math.min(totalWan, 500000);
+            document.getElementById('retireLinkBanner').classList.remove('hidden');
+            switchTab('invest');
+        }
+
+        function goToInvestWithCustom() {
+            const targetWan = parseInt(document.getElementById('retireCustomTarget').value) || 0;
+            if (targetWan <= 0) {
+                alert('최종 목표금액을 입력해 주세요!');
+                document.getElementById('retireCustomTarget').focus();
+                return;
+            }
+            document.getElementById('investTargetNum').value = targetWan;
+            document.getElementById('investTargetRange').value = Math.min(targetWan, 500000);
+            document.getElementById('retireLinkBanner').classList.remove('hidden');
+            switchTab('invest');
+        }
+
+        function clearRetireLink() {
+            document.getElementById('retireLinkBanner').classList.add('hidden');
+        }
+
+        function updateInvestChart(initial, monthly, annualRate, years, target) {
+            const labels = [], dataAsset = [], dataTarget = [];
+            const monthlyRate = annualRate / 12;
+            for (let i = 0; i <= years; i++) {
+                labels.push(i + '년'); let val = monthlyRate > 0
+                    ? initial * Math.pow(1 + monthlyRate * 12, i) +
+                    monthly * ((Math.pow(1 + monthlyRate, i * 12) - 1) / monthlyRate) * (1 + monthlyRate)
+                    : initial + monthly * i * 12;
+                dataAsset.push(Math.round(val / 10000));
+                dataTarget.push(Math.round(target / 10000));
+            }
+            if (myChart) myChart.destroy();
+            const ctx = document.getElementById('myChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: '예상 자산', data: dataAsset, borderColor: '#34d399', backgroundColor:
+                                'rgba(52,211,153,0.1)', fill: true, tension: 0.4, pointRadius: 0
+                        },
+                        {
+                            label: '목표', data: dataTarget, borderColor: '#60a5fa', borderDash: [5, 5], backgroundColor:
+                                'transparent', tension: 0, pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: '#94a3b8', font: { size: 10 } } } },
+                    scales: {
+                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: {
+                            grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 }, maxTicksLimit: 8 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function numberToKorean(number) {
+            if (number === 0) return '0';
+            const units = ['', '만', '억', '조'];
+            let result = '';
+            let unitIdx = 0;
+            while (number > 0) {
+                let part = number % 10000;
+                if (part > 0) result = part.toLocaleString() + units[unitIdx] + ' ' + result;
+                number = Math.floor(number / 10000);
+                unitIdx++;
+            }
+            return result.trim();
+        }
+
+        function saveInvestState() {
+            const s = {
+                target: document.getElementById('investTargetNum').value,
+                initial: document.getElementById('investInitialNum').value,
+                rate: document.getElementById('investRateNum').value,
+                years: document.getElementById('investYearsNum').value,
+                monthly: document.getElementById('investMonthlyNum').value,
+                mode: investMode
+            };
+            localStorage.setItem('investState', JSON.stringify(s));
+        }
+
+        function loadInvestState() {
+            const data = localStorage.getItem('investState');
+            if (!data) return;
+            const s = JSON.parse(data);
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+            set('investTargetNum', s.target); set('investTargetRange', s.target);
+            set('investInitialNum', s.initial); set('investInitialRange', s.initial);
+            set('investRateNum', s.rate); set('investRateRange', s.rate);
+            set('investYearsNum', s.years); set('investYearsRange', s.years);
+            set('investMonthlyNum', s.monthly); set('investMonthlyRange', s.monthly);
+            if (s.mode) {
+                investMode = s.mode;
+                const radio = document.querySelector(`input[name="investMode"][value="${s.mode}"]`);
+                if (radio) { radio.checked = true; toggleInvestMode(); }
+            }
+        }
+
+        // invest 입력 이벤트 연결
+        ['investTargetRange', 'investTargetNum'].forEach(id =>
+            document.getElementById(id)?.addEventListener('input', e => {
+                document.getElementById(id ===
+                    'investTargetRange' ? 'investTargetNum' : 'investTargetRange').value = e.target.value;
+                calcInvest();
+            }));
+        ['investInitialRange', 'investInitialNum'].forEach(id =>
+            document.getElementById(id)?.addEventListener('input', e => {
+                document.getElementById(id ===
+                    'investInitialRange' ? 'investInitialNum' : 'investInitialRange').value = e.target.value;
+                calcInvest();
+            }));
+
+        ['investYearsRange', 'investYearsNum'].forEach(id =>
+            document.getElementById(id)?.addEventListener('input', e => {
+                document.getElementById(id ===
+                    'investYearsRange' ? 'investYearsNum' : 'investYearsRange').value = e.target.value;
+                calcInvest();
+            }));
+        ['investMonthlyRange', 'investMonthlyNum'].forEach(id =>
+            document.getElementById(id)?.addEventListener('input', e => {
+                document.getElementById(id ===
+                    'investMonthlyRange' ? 'investMonthlyNum' : 'investMonthlyRange').value = e.target.value;
+                calcInvest();
+            }));
+
+
+        // 스냅샷 모달
+        function openSnapshotModal() {
+            const dateLabel = document.getElementById('snapshotDateLabel');
+            if (dateLabel) dateLabel.innerText = new Date().toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long', day: 'numeric'
+            });
+            document.getElementById('snapshotModal').classList.remove('hidden');
+            // 얼마면돼 탭의 현재자산 값 있으면 기본 기입
+            const initVal = document.getElementById('investInitialNum')?.value;
+            if (initVal) document.getElementById('snapshotAssetNum').value = initVal;
+        }
+
+        function doSaveSnapshot() {
+            const currentAssetWan = parseInt(document.getElementById('snapshotAssetNum').value) || 0;
+            const currentAsset = currentAssetWan * 10000;
+
+            // 목표금액
+            const targetWan = parseInt(document.getElementById('investTargetNum')?.value) || 0;
+            const target = targetWan * 10000;
+
+            // 월 절약액 누적
+            const totalSave = savedItems.reduce((sum, item) => sum + item.monthly, 0);
+
+            // 목표까지 남은 기간 계산 (연 7% 복리)
+            let remainingStr = '-';
+            if (target > 0 && currentAsset < target) {
+                const annualRate = 0.07; const monthlyRate = annualRate /
+                    12; const monthlyContrib = Math.round(window.linkedMonthlyAmount) * 10000; let low = 0,
+                        high = 100; for (let i = 0; i < 60; i++) {
+                            const mid = (low + high) / 2; const m = mid * 12; let
+                                val = monthlyRate > 0
+                                    ? currentAsset * Math.pow(1 + monthlyRate, m) + monthlyContrib * (Math.pow(1 + monthlyRate,
+                                        m) - 1) / monthlyRate * (1 + monthlyRate)
+                                    : currentAsset + monthlyContrib * m;
+                            if (val < target) low = mid; else high = mid;
+                        } const totalMonths = Math.ceil((low + high) / 2 *
+                            12); const yy = Math.floor(totalMonths / 12); const mm = totalMonths % 12; remainingStr = yy >
+                                0 ? (mm > 0 ? `${yy}년 ${mm}개월` : `${yy}년`) : `${mm}개월`;
+            } else if (target > 0 && currentAsset >= target) {
+                remainingStr = '이미 달성! 🎉';
+            }
+
+            const snapshot = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('ko-KR', {
+                    year: 'numeric', month: 'long', day:
+                        'numeric'
+                }),
+                currentAsset,
+                target,
+                monthlySave: totalSave,
+                remainingStr
+            };
+
+            let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+            history.unshift(snapshot);
+            localStorage.setItem('calcHistory', JSON.stringify(history));
+
+            document.getElementById('snapshotModal').classList.add('hidden');
+            renderHistoryList();
+            switchTab('history');
+        }
+
+        function renderHistoryList() {
+            const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+            const container = document.getElementById('historyListContainer');
+            const summaryBar = document.getElementById('historySummaryBar');
+            if (history.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-center py-10">아직 기록된 데이터가 없습니다.<br><span class="text-xs mt-2 block">💾 현재 상태 기록 버튼으로 시작하세요!</span></p>';
+                if (summaryBar) summaryBar.classList.add('hidden');
+                return;
+            }
+            const cumulativeSave = history.reduce((sum, h) => sum + (h.monthlySave || 0), 0);
+            if (summaryBar) {
+                summaryBar.classList.remove('hidden');
+                document.getElementById('historyCumulativeSave').innerText = numberToKorean(cumulativeSave) + '원 누계';
+                document.getElementById('historyCount').innerText = history.length + '회';
+            }
+
+            container.innerHTML = history.map((h, idx) => {
+                const progressPct = h.target > 0 ? Math.min(100, Math.round(h.currentAsset / h.target * 100)) : 0;
+                const progressColor = progressPct >= 100 ? '#34d399' : progressPct >= 50 ? '#60a5fa' : '#a78bfa';
+                const isFirst = idx === 0;
+                const progressBar = h.target > 0 ? `
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs text-slate-500 mb-1"><span>현재 자산</span><span>목표 금액</span></div>
+                        <div class="flex justify-between text-sm font-bold mb-2">
+                            <span class="text-white">${numberToKorean(h.currentAsset)}원</span>
+                            <span class="text-slate-400">${numberToKorean(h.target)}원</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="h-2 rounded-full" style="width:${progressPct}%;background:${progressColor}"></div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-1">
+                            <span style="color:${progressColor}">${progressPct}% 달성</span>
+                            <span class="text-slate-500">부족: ${numberToKorean(Math.max(0, h.target - h.currentAsset))}원</span>
+                        </div>
+                    </div>` : '';
+                return `
+                <div class="bg-slate-800 p-5 rounded-2xl border ${isFirst ? 'border-purple-500/50' : 'border-slate-700'} shadow-lg relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="text-xs font-bold text-purple-400 bg-purple-500/10 px-2 py-1 rounded">${h.date}</span>
+                            ${isFirst ? '<span class="ml-2 text-xs bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded">최신</span>' : ''}
+                        </div>
+                        <button onclick="deleteHistory(${h.id})" class="text-slate-600 hover:text-red-400 transition text-xs">삭제</button>
+                    </div>
+                    ${progressBar}
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900/50 rounded-xl p-3">
+                            <p class="text-xs text-slate-500 mb-1">⏳ 남은 기간</p>
+                            <p class="text-sm font-bold text-emerald-400">${h.remainingStr || '-'}</p>
+                        </div>
+                        <div class="bg-slate-900/50 rounded-xl p-3">
+                            <p class="text-xs text-slate-500 mb-1">💰 월 절약액</p>
+                            <p class="text-sm font-bold text-cyan-400">${numberToKorean(h.monthlySave || 0)}원</p>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function deleteHistory(id) {
+            let history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+            history = history.filter(h => h.id !== id);
+            localStorage.setItem('calcHistory', JSON.stringify(history));
+            renderHistoryList();
+        }
+
+        function captureImage() {
+            const area = document.getElementById('captureArea');
+            html2canvas(area, {
+                backgroundColor: '#0f172a',
+                scale: 2,
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                document.getElementById('generatedImage').src = imgData;
+                document.getElementById('imgModal').classList.remove('hidden');
+            });
+        }
+
+        function toggleGuide() {
+            const popup = document.getElementById('guidePopup');
+            popup.classList.toggle('hidden');
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    </script>
+</body>
+
+</html>
