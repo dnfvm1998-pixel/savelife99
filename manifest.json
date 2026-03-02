@@ -1,0 +1,16 @@
+{
+  "name": "은퇴 얼마면 돼?",
+  "short_name": "얼마면돼",
+  "description": "도파민 디톡스 및 은퇴 자금 계산기",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
